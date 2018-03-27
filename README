@@ -1,0 +1,32 @@
+Name: Amarok2LibreFM
+Version: 0.2
+Target: Amarok 2.0+ 
+Date:	February 7, 2010
+Author:	Ed Daniel (esdaniel) based on amarokNotify script by Anthony Mok
+E-mail:	ubuntu@esdaniel.org
+Dependencies: lastfmsubmitd
+
+"a bunch of this was hacked together from observing other scripts
+like the encoding-fixer, PidginStatus, and wlmnow", amaroKnotify 
+and the earlier Amarok 1.4 LibreFM plugin
+
+To install:
+
+This script depends on 'lastfmsubmitd' which can be found in Ubuntu repos and installed using:
+
+  sudo apt-get install lastfmsubmitd
+
+Edit the config of /etc/lastfmsubmitd.conf and add your LibreFM account details as follows:
+
+  [account]
+  password = your_librefm_password
+  user = your_librefm_userid
+
+  [server]
+  url = http://turtle.libre.fm/
+
+Then install the script via the Amarok script manager.
+
+If you want/need to disable the script you can do so from Amarok's settings menu instead of via the script manager dialogue.
+ 
+That's it!  Enjoy :-)
