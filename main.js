@@ -15,10 +15,12 @@ Importer.loadQtBinding( 'qt.core' );
 Importer.include ( "config.js" );
 
 function notify() {
-	
+  
+  // Installation path of lastfmsubmitd can be modified.
+  var SUBMIT_CMD = '/usr/lib/lastfmsubmitd/lastfmsubmit'
   try {
 
-    var command = '/usr/lib/lastfmsubmitd/lastfmsubmit --encoding UTF-8 ';
+    var command = SUBMIT_CMD + ' --encoding UTF-8 ';
     var currentTrack = Amarok.Engine.currentTrack();
 
     if (currentTrack.artist != '' && currentTrack.title != '') {
@@ -26,7 +28,8 @@ function notify() {
       var result = command + '--artist \"' + currentTrack.artist +'\" ';
       result = result + '--title \"' + currentTrack.title +'\" ';
       result = result + '--album \"' + currentTrack.album +'\" ';
-      result = result + '--length ' + currentTrack.length;
+      // amarok 2.8 (and maybe other versions) provides the track length in milliseconds
+      result = result + '--length ' + Math.round(currentTrack.length/1000);
 
       var process = new QProcess();
       process.start(result);
@@ -39,16 +42,21 @@ function notify() {
 
 }
 
+// Date/time when the last song was started.
+var serial = null;
+
 function onTrackChange() {
   if (config["showChange"]) {
     var currentTrack = Amarok.Engine.currentTrack();
+    var my_serial = serial = new Date();
     var wait_to_update = currentTrack.length * 0.33; // i.e. wait 33% of track length played before updating (in milliseconds)
     var qo = new QObject();
-    qo.event = function(qevent) {
-	if (currentTrack.path == Amarok.Engine.currentTrack().path) {
-	  notify();
-	}
-	this.killTimer(qo.timerID);
+    qo.event = function (qevent) {
+      // if the serial has not changed: same track is being played => be can scrobbel it
+      if (my_serial == serial) {
+        notify();
+      }
+      this.killTimer(qo.timerID);
     }
     qo.timerID = qo.startTimer(wait_to_update);
   }
